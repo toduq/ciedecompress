@@ -4,6 +4,9 @@ import (
 	"math"
 )
 
+// Reference
+// https://en.wikipedia.org/wiki/Color_difference#CIEDE2000
+
 type Lab struct {
 	L float64
 	A float64
