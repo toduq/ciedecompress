@@ -31,12 +31,12 @@ var (
 func main() {
 	flag.StringVar(&srcFile, "i", "src.bmp", "src file")
 	flag.StringVar(&destFile, "o", "dest.bmp", "dest file")
-	flag.IntVar(&size, "size", 10, "squash rect size")
+	flag.IntVar(&size, "size", 8, "squash rect size")
 	flag.Float64Var(&border, "border", 1.0, "squash diff limit")
 	flag.IntVar(&workers, "workers", 3, "worker size")
 	flag.Parse()
 
-	fmt.Println(srcFile, "to", destFile, " with {size:", size, ", border: ", border, "}")
+	fmt.Println(srcFile, "to", destFile, "with {size:", size, ", border: ", border, "}")
 
 	imagick.Initialize()
 	defer imagick.Terminate()
