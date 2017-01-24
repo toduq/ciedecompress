@@ -1,12 +1,13 @@
 package main
 
 import (
-	"fmt"
 	"flag"
+	"fmt"
 	"os"
+
 	"github.com/deckarep/golang-set"
 	"gopkg.in/gographics/imagick.v2/imagick"
-//	"./color"
+	//	"./color"
 	"github.com/toduq/ciedecompress/color"
 )
 
@@ -21,11 +22,12 @@ type ProcessingPixel struct {
 }
 
 var (
-	srcFile string
+	srcFile  string
 	destFile string
-	size int
-	border float64
-	workers int
+	size     int
+	border   float64
+	workers  int
+	verbose  bool
 )
 
 func main() {
@@ -34,9 +36,12 @@ func main() {
 	flag.IntVar(&size, "size", 8, "squash rect size")
 	flag.Float64Var(&border, "border", 1.0, "squash diff limit")
 	flag.IntVar(&workers, "workers", 3, "worker size")
+	flag.BoolVar(&verbose, "v", false, "verbose")
 	flag.Parse()
 
-	fmt.Println(srcFile, "to", destFile, "with {size:", size, ", border: ", border, "}")
+	if verbose {
+		fmt.Println(srcFile, "to", destFile, "with {size:", size, ", border: ", border, "}")
+	}
 
 	imagick.Initialize()
 	defer imagick.Terminate()
@@ -112,7 +117,7 @@ func main() {
 		}
 	}
 
-	for j:=0; j<workers; j++ {
+	for j := 0; j < workers; j++ {
 		go diffWorker(jobs, pipe)
 	}
 	go replaceWorker(pipe, done)
@@ -120,7 +125,7 @@ func main() {
 	for i := 0; i < cells; i++ {
 		x := (i % (width / size)) * size
 		y := (i / (height / size)) * size
-		if processed%100 == 0 {
+		if processed%100 == 0 && verbose {
 			fmt.Println("processing", cells, "->", processed)
 		}
 		processed++
@@ -135,9 +140,8 @@ func main() {
 		}
 		jobs <- pixels
 	}
-	fmt.Println("pipe close")
 	close(jobs)
 	pipe <- nil
-	<- done
+	<-done
 	img.WriteImage(destFile)
 }
